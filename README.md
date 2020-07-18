@@ -4,7 +4,28 @@ CLI tool for working with the [Netscape Bookmark File](https://docs.microsoft.co
 
 It takes JSON from stdin and outputs HTML.
 
+## JSON format
+
+`nbf` expects JSON items to have the following properties:
+
+```js
+{
+	"title": "...",
+	"uri": "https://",
+	"description": "...",
+	"dateAdded": "", // something that JS Date() can parse 
+	"tags": ["...", "..."], // or:
+	"tags": "..., ..., ..."
+}
+```
+
 ## Sources
+
+For convenience, the predefined sources listed below convert the JSON to the proper format for you. Usage:
+
+```bash
+curl -sN ... > nbf --source=<source>
+```
 
 ### Lobste.rs saved bookmarks
 
@@ -12,4 +33,3 @@ It takes JSON from stdin and outputs HTML.
 
 1. In Firefox, go to [lobste.rs/saved](https://lobste.rs/saved) and copy the request from the dev tools Network tab as cURL
 2. Paste the cURL comamnd, in the terminal, followed by `-sN | nbf --source=lobsters > output.html`
-

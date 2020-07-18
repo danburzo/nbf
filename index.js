@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const wrapper = content => `<!DOCTYPE NETSCAPE-Bookmark-file-1>
 <!-- This is an automatically generated file.
      It will be read and overwritten.
@@ -21,17 +19,16 @@ const sanitize_html = str =>
 
 // Format the JSON object for the bookmark item into a HTML fragment
 const bookmark_to_html = item => {
-
 	let tags = Array.isArray(item.tags) ? item.tags.join(',') : item.tags;
-
-	return `<DT><A HREF="${item.uri}" ADD_DATE="${toDate(item.dateAdded)}" ${ tags ? `TAGS="${tags}"` : ''}>${sanitize_html(item.title)}</A>
-${item.description ? '<DD>' + sanitize_html(item.description) : ''}
+	let date = toDate(item.dateAdded);
+	return `<DT><A HREF="${item.uri}" ${date ? `ADD_DATE="${date}"`: ''} ${ tags ? `TAGS="${tags}"` : ''}>${sanitize_html(item.title) || '[no title]'}</A>
+${item.description ? `<DD>${sanitize_html(item.description)}` : ''}
 	`;
 };
 
 // Transform the Javascript timestamp (in milliseconds from Jan 1, 1970) to the 
 // Epoch time (in seconds from Jan 1, 1970) used in Netscape format
-const toDate = date => Math.round(new Date(date).getTime() / 1000);
+const toDate = date => date ? Math.round(new Date(date).getTime() / 1000) : '';
 
 const render = (obj, source) => {
 	if (Array.isArray(obj)) {
@@ -52,22 +49,8 @@ ${render(obj.children)}
 	}
 };
 
-process.stdin.setEncoding('utf8');
-
-let content = '';
-
-process.stdin.on('readable', () => {
-  let chunk;
-  while ((chunk = process.stdin.read()) !== null) {
-    content += chunk;
-  }
-});
-
-process.stdin.on('end', () => {
-	let source = process.argv.map(item => item.match(/--source=([a-z0-9-_]+)/i)).find(it => it);
-	process.stdout.write(
-		wrapper(
-			render(JSON.parse(content), source && source[1] ? require(`./sources/${source[1]}`) : t => t)
-		)
-	);
-});
+module.exports = {
+	toNBF: (obj, source) => {
+		return wrapper(render(obj, source));
+	}
+};
