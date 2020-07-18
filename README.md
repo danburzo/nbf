@@ -35,6 +35,45 @@ npx nbf
 }
 ```
 
+## Guide
+
+### Prerequisites
+
+* [curl](https://curl.haxx.se/)
+* [jq](https://stedolan.github.io/jq/) ([tutorial](
+https://programminghistorian.org/en/lessons/json-and-jq))
+
+### Mastodon 
+
+Grab an archive of your Mastodon account with [mastodon-archive](https://github.com/kensanata/mastodon-backup).
+
+In the example below, we use `jq` to look at favourites that have a card attached to them, and reshape the JSON to fit our schema:
+
+```bash
+cat mastodon.social.user.danburzo.json | \
+jq '[
+		.favourites[] | 
+		select(.card) | 
+		{ 
+			dateAdded: .created_at, 
+			uri: .card.url, 
+			title: .card.title, 
+			description: "\(.card.description)\nvia: \(.url)" 
+		}
+	]' | \
+nbf > mastodon-faves.html
+```
+
+### Lobste.rs
+
+### Firefox bookmarks
+
+TODO
+
+### Safari bookmarks
+
+TODO
+
 ## Sources
 
 For convenience, the predefined sources listed below convert the JSON to the proper format for you. Usage:
