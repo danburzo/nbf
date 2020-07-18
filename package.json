@@ -1,0 +1,11 @@
+{
+  "name": "nbf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:danburzo/nbf.git",
+  "author": "Dan Burzo <dan@danburzo.ro>",
+  "license": "MIT",
+  "bin": {
+  	"nbf": "./index.js"
+  }
+}
