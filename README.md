@@ -43,9 +43,11 @@ For convenience, the predefined sources listed below convert the JSON to the pro
 curl -sN ... > nbf --source=<source>
 ```
 
-### Lobste.rs saved bookmarks
+### Lobste.rs
+
+Lobste.rs offers a JSON format for some things, such as your saved stories or your submissions.
 
 `--source=lobsters`
 
-1. In Firefox, go to [lobste.rs/saved](https://lobste.rs/saved) and copy the request from the dev tools Network tab as cURL
+1. In Firefox, go to [lobste.rs/saved.json](https://lobste.rs/saved.json) and copy the request from the dev tools Network tab as cURL
 2. Paste the cURL comamnd, in the terminal, followed by `-sN | nbf --source=lobsters > output.html`

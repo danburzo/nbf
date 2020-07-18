@@ -51,6 +51,6 @@ ${render(obj.children)}
 
 module.exports = {
 	toNBF: (obj, source) => {
-		return wrapper(render(obj, source));
+		return wrapper(render(obj, source ? require(`./sources/${source}.js`) : undefined));
 	}
 };
