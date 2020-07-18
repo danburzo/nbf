@@ -1,8 +1,24 @@
 # nbf
 
-CLI tool for working with the [Netscape Bookmark File](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN) format.
+Tiny, dependency-free, CLI tool for working with the [Netscape Bookmark File](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN) format. It consumes a JSON file from `stdin` and outputs HTML to `stdout`.
 
-It takes JSON from stdin and outputs HTML.
+## Installation
+
+Install globally with `npm` or `yarn`:
+
+```bash
+# npm:
+npm install -g nbf
+
+# yarn:
+yarn global add nbf
+```
+
+Or run it directly with `npx`:
+
+```bash
+npx nbf
+```
 
 ## JSON format
 
