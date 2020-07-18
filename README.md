@@ -64,7 +64,37 @@ jq '[
 nbf > mastodon-faves.html
 ```
 
+### NetNewsWire starred articles
+
+On macOS, NetNewsWire keeps user data in a SQLite database. We can browse and query it, and grab a JSON of the result, using [`datasette`](https://github.com/simonw/datasette): 
+
+```bash
+datasette serve ~/Library/Application\ Support/NetNewsWire/Accounts/OnMyMac/DB.sqlite3
+```
+
+Head over to [`http://127.0.0.1:8001/`](http://127.0.0.1:8001/) and run this query:
+
+```sql
+select 
+  a.title as title, 
+  a.summary as description, 
+  coalesce(a.url, a.externalURL) as uri,
+  a.datePublished as dateAdded
+from articles as a join statuses as s 
+on a.articleID = s.articleID 
+where s.starred = 1;
+```
+
+Then follow the `json` link, and add the `_shape=array` query parameter — this shapes the JSON in a way that we can use directly. We can `curl` it in our command:
+
+```bash
+curl http://127.0.0.1:8001/DB.json\?_shape\=array\&sql\=select+%0D%0A++a.title+as+title%2C+%0D%0A++a.summary+as+description%2C+%0D%0A++coalesce%28a.url%2C+a.externalURL%29+as+uri%2C%0D%0A++a.datePublished+as+dateAdded%0D%0Afrom+articles+as+a+join+statuses+as+s+%0D%0Aon+a.articleID+%3D+s.articleID+%0D%0Awhere+s.starred+%3D+1%3B -nS | \
+nbf > nnw.html
+```
+
 ### Lobste.rs
+
+TODO
 
 ### Firefox bookmarks
 
