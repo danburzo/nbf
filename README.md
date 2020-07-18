@@ -79,7 +79,7 @@ select
   a.title as title, 
   a.summary as description, 
   coalesce(a.url, a.externalURL) as uri,
-  a.datePublished as dateAdded
+  a.datePublished * 1000 as dateAdded
 from articles as a join statuses as s 
 on a.articleID = s.articleID 
 where s.starred = 1;
