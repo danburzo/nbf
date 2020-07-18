@@ -72,7 +72,7 @@ On macOS, NetNewsWire keeps user data in a SQLite database. We can browse and qu
 datasette serve ~/Library/Application\ Support/NetNewsWire/Accounts/OnMyMac/DB.sqlite3
 ```
 
-Head over to [`http://127.0.0.1:8001/`](http://127.0.0.1:8001/) and run this query:
+Head over to [`http://127.0.0.1:8001/DB`](http://127.0.0.1:8001/DB) and run this query:
 
 ```sql
 select 
@@ -88,8 +88,27 @@ where s.starred = 1;
 Then follow the `json` link, and add the `_shape=array` query parameter — this shapes the JSON in a way that we can use directly. We can `curl` it in our command:
 
 ```bash
-curl http://127.0.0.1:8001/DB.json\?_shape\=array\&sql\=select+%0D%0A++a.title+as+title%2C+%0D%0A++a.summary+as+description%2C+%0D%0A++coalesce%28a.url%2C+a.externalURL%29+as+uri%2C%0D%0A++a.datePublished+as+dateAdded%0D%0Afrom+articles+as+a+join+statuses+as+s+%0D%0Aon+a.articleID+%3D+s.articleID+%0D%0Awhere+s.starred+%3D+1%3B -nS | \
+curl http://127.0.0.1:8001/DB.json?_shape=array&sql=select+%0D%0A++a.title+as+title%2C+%0D%0A++a.summary+as+description%2C+%0D%0A++coalesce(a.url%2C+a.externalURL)+as+uri%2C%0D%0A++a.datePublished+*+1000+as+dateAdded%0D%0Afrom+articles+as+a+join+statuses+as+s+%0D%0Aon+a.articleID+%3D+s.articleID+%0D%0Awhere+s.starred+%3D+1%3B -nS | \
 nbf > nnw.html
+```
+
+### GitHub starred repos
+
+[GitHub CLI](https://cli.github.com/) (currently in beta) makes it easy to collate paginated responses from the GitHub API.
+
+```bash
+gh api users/danburzo/starred \
+	-H "Accept: application/vnd.github.v3.star+json" \
+	--paginate \
+| jq '
+	.[] | select(.repo.private == false) | { 
+		title: .repo.full_name, 
+		uri: .repo.html_url, 
+		dateAdded: .starred_at,
+		description: "\(.repo.description) (\(.repo.language // ""))\n\(.repo.homepage // "")" 
+}' \
+| jq -s '.' \
+| nbf > stars.html
 ```
 
 ### Lobste.rs
