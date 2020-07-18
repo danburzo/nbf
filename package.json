@@ -1,6 +1,6 @@
 {
   "name": "nbf",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI tool for working with the Netscape Bookmark File format.",
   "main": "index.js",
   "repository": "git@github.com:danburzo/nbf.git",
