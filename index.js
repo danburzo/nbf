@@ -30,12 +30,9 @@ ${item.description ? `<DD>${sanitize_html(item.description)}` : ''}
 // Epoch time (in seconds from Jan 1, 1970) used in Netscape format
 const toDate = date => date ? Math.round(new Date(date).getTime() / 1000) : '';
 
-const render = (obj, source) => {
+const render = obj => {
 	if (Array.isArray(obj)) {
-		return obj.map(item => render(item, source)).join('\n');
-	}
-	if (source) {
-		obj = source(obj);
+		return obj.map(render).join('\n');
 	}
 	if (Array.isArray(obj.children)) {
 		// folder
@@ -50,7 +47,7 @@ ${render(obj.children)}
 };
 
 module.exports = {
-	toNBF: (obj, source) => {
-		return wrapper(render(obj, source ? require(`./sources/${source}.js`) : undefined));
+	toNBF: obj => {
+		return wrapper(render(obj));
 	}
 };

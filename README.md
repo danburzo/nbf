@@ -29,15 +29,28 @@ npx nbf
 	"title": "...",
 	"uri": "https://",
 	"description": "...",
-	"dateAdded": "", // something that JS Date() can parse 
+	"dateAdded": "...", // something that JS Date() can parse 
 	"tags": ["...", "..."], // or:
 	"tags": "..., ..., ..."
 }
 ```
 
-## Guide
+Folders and subfolders are possible: 
+
+```js
+{
+	"title": "...",
+	"children": [
+		// ...
+	]
+}
+```
+
+## Guide to exporting bookmarks
 
 ### Prerequisites
+
+Most of these recipes use: 
 
 * [curl](https://curl.haxx.se/)
 * [jq](https://stedolan.github.io/jq/) ([tutorial](
@@ -58,7 +71,8 @@ jq '[
 			dateAdded: .created_at, 
 			uri: .card.url, 
 			title: .card.title, 
-			description: "\(.card.description)\nvia: \(.url)" 
+			description: "\(.card.description)\nvia: \(.url)",
+			tags: ["from:mastodon"] 
 		}
 	]' | \
 nbf > mastodon-faves.html
@@ -97,23 +111,52 @@ nbf > nnw.html
 [GitHub CLI](https://cli.github.com/) (currently in beta) makes it easy to collate paginated responses from the GitHub API.
 
 ```bash
-gh api users/danburzo/starred \
+gh api user/starred \
 	-H "Accept: application/vnd.github.v3.star+json" \
+	-H "Accept: application/vnd.github.mercy-preview+json" \
 	--paginate \
 | jq '
-	.[] | select(.repo.private == false) | { 
-		title: .repo.full_name, 
-		uri: .repo.html_url, 
-		dateAdded: .starred_at,
-		description: "\(.repo.description) (\(.repo.language // ""))\n\(.repo.homepage // "")" 
+        .[] | select(.repo.private == false) | {
+                title: .repo.full_name,
+                uri: .repo.html_url,
+                dateAdded: .starred_at,
+                description: "\(.repo.description)\n\(.repo.homepage // "")",
+                tags: (
+                        (.repo.topics // []) +
+                        [.repo.language // ""] +
+                        ["source:github"]
+                ) | map(. | ascii_downcase) | unique
 }' \
 | jq -s '.' \
 | nbf > stars.html
 ```
 
+If afterwards you want to unstar the repos in bulk, use:
+
+```bash
+gh api user/starred | \
+jq -r '.[] | "user/starred/\(.full_name)"' | \
+xargs -L1 gh api --method=DELETE
+```
+
+Variations: 
+
+* plop an `--interactive` flag for xargs to confirm each unstar with the `y` key + Enter. (Is there a way to get Yes by default? 🤔)
+* use the `--paginate` flag on `gh api` to go through *all* your starred repos, but that might get you rate-limited.
+
 ### Lobste.rs
 
-TODO
+Lobste.rs offers a JSON endpoint for most things, for example [lobste.rs/saved.json](https://lobste.rs/saved.json). Because you need the session cookie to make this request from the command-line, we go to the browser's dev tools, right-click the select and choose _Copy as cURL_. 
+
+```bash
+curl ... | jq '[.[] | {
+	title: .title,
+	description: "\(.description)\nvia: \(.short_id_url)",
+	uri: .url,
+	tags: ((.tags // []) + ["source:lobste.rs"]),
+	dateAdded: .created_at
+}]' | nbf
+```
 
 ### Firefox bookmarks
 
@@ -122,20 +165,3 @@ TODO
 ### Safari bookmarks
 
 TODO
-
-## Sources
-
-For convenience, the predefined sources listed below convert the JSON to the proper format for you. Usage:
-
-```bash
-curl -sN ... > nbf --source=<source>
-```
-
-### Lobste.rs
-
-Lobste.rs offers a JSON format for some things, such as your saved stories or your submissions.
-
-`--source=lobsters`
-
-1. In Firefox, go to [lobste.rs/saved.json](https://lobste.rs/saved.json) and copy the request from the dev tools Network tab as cURL
-2. Paste the cURL comamnd, in the terminal, followed by `-sN | nbf --source=lobsters > output.html`
