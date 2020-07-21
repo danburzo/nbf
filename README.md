@@ -27,7 +27,7 @@ npx nbf
 ```js
 {
 	"title": "...",
-	"uri": "https://",
+	"uri": "https://...",
 	"description": "...",
 	"dateAdded": "...", // something that JS Date() can parse 
 	"tags": ["...", "..."], // or:
