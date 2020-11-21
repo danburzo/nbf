@@ -1,4 +1,5 @@
-const wrapper = content => `<!DOCTYPE NETSCAPE-Bookmark-file-1>
+const NBF_DTD = '<!DOCTYPE NETSCAPE-Bookmark-file-1>';
+const wrapper = content => `${NBF_DTD}
 <!-- This is an automatically generated file.
      It will be read and overwritten.
      DO NOT EDIT! -->
@@ -47,7 +48,11 @@ ${render(obj.children)}
 };
 
 module.exports = {
-	toNBF: obj => {
+	jsonToHtml: obj => {
 		return wrapper(render(obj));
-	}
+	},
+	htmlToJson: content => {
+		return 'TODO: not implemented yet';
+	},
+	NBF_DTD
 };

@@ -1,6 +1,8 @@
 # nbf
 
-Tiny, dependency-free, CLI tool for working with the [Netscape Bookmark File](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN) format. It consumes a JSON file from `stdin` and outputs HTML to `stdout`.
+Tiny, dependency-free, CLI tool for working with the [Netscape Bookmark File](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)) format. 
+
+Its only function is to take a JSON object from `stdin` and output HTML to `stdout`.
 
 ## Installation
 
@@ -121,15 +123,21 @@ gh api user/starred \
                 uri: .repo.html_url,
                 dateAdded: .starred_at,
                 description: "\(.repo.description)\n\(.repo.homepage // "")",
-                tags: (
-                        (.repo.topics // []) +
-                        [.repo.language // ""] +
-                        ["source:github"]
-                ) | map(. | ascii_downcase) | unique
+                tags: ["source:github"]
 }' \
 | jq -s '.' \
 | nbf > stars.html
 ```
+
+If you also want to include repository topics and/or language as tags — but be aware that people can go overboard with topics in an effort to make their repos more discoverable:
+
+```
+tags: (
+    (.repo.topics // []) +
+    [.repo.language // ""] +
+    ["source:github"]
+) | map(. | ascii_downcase) | unique
+``` 
 
 If afterwards you want to unstar the repos in bulk, use:
 
