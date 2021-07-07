@@ -85,6 +85,7 @@ Most of these recipes use:
 * [curl](https://curl.haxx.se/)
 * [jq](https://stedolan.github.io/jq/) ([tutorial](
 https://programminghistorian.org/en/lessons/json-and-jq))
+* [hred](https://github.com/danburzo/hred)
 
 Jump to:
 
@@ -92,8 +93,7 @@ Jump to:
 * [NetNewsWire starred articles](#netnewswire-starred-articles)
 * [GitHub starred repos](#github-starred-repos)
 * [Lobste.rs](#lobste-rs)
-* Firefox bookmarks — TODO
-* Safari bookmarks — TODO
+* [Safari bookmarks](#safari-bookmarks)
 
 ### Mastodon 
 
@@ -203,4 +203,20 @@ curl ... | jq '[.[] | {
 	tags: ((.tags // []) + ["source:lobste.rs"]),
 	dateAdded: .created_at
 }]' | nbf
+```
+
+### Safari Bookmarks
+
+Safari offers an option to <kbd>Export Bookmarks...</kbd> which is already in the Netscape Bookmark Format. However, we may want to run the bookmarks through `nbf` to:
+
+* add `source:safari` as a tag;
+* give `nbf` a chance to timestamp each bookmark.
+
+We can extract a JSON from the _Safari Bookmarks.html_ file with [hred](https://github.com/danburzo/hred), then using `jq` to add the `tags` property to each object:
+
+```bash
+cat ~d/Safari\ Bookmarks.html \
+| hred "a { @href => uri, @.textContent => title }" \
+| jq '[ .[] | .tags = ["source:safari"] ]' \
+| nbf > safari-tagged.html
 ```

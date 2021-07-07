@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-let { jsonToHtml } = require('./index.js');
-let { stdin, stdout, NBF_DTD } = process;
+let convertToHTML = require('./index.js');
+let { stdin, stdout } = process;
 let content = '';
 
 stdin
@@ -11,9 +11,5 @@ stdin
 			content += chunk;
 		}
 	}).on('end', () => {
-		stdout.write(
-			content.trim().indexOf(NBF_DTD) === 0 ? 
-			htmlToJson(content)
-			: jsonToHtml(JSON.parse(content))
-		);
+		stdout.write(convertToHTML(JSON.parse(content)));
 	});
