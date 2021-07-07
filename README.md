@@ -28,11 +28,34 @@ npx nbf
 
 ```js
 {
-	"title": "...",
+	/*
+		Required bookmark URL.
+	 */
 	"uri": "https://...",
+
+	/*
+		Optional bookmark title.
+	 */
+	"title": "...",
+
+	/*
+		Optional bookmark description.
+	 */
 	"description": "...",
-	"dateAdded": "...", // something that JS Date() can parse 
-	"tags": ["...", "..."], // or:
+	
+	/*
+		Optional bookmark date in any format 
+		parsable by JavaScript's Date() constructor. 
+		When missing, the bookmark will be tagged 
+		with the current timestamp.
+	 */
+	"dateAdded": "...",
+	
+	/*
+		Optional tags, either as an array 
+		or a comma-separated string.
+	 */
+	"tags": ["...", "..."],
 	"tags": "..., ..., ..."
 }
 ```
@@ -41,7 +64,14 @@ Folders and subfolders are possible:
 
 ```js
 {
+	/*
+		Folder title.
+	 */
 	"title": "...",
+
+	/*
+		Nested bookmarks.
+	 */
 	"children": [
 		// ...
 	]
@@ -50,13 +80,20 @@ Folders and subfolders are possible:
 
 ## Guide to exporting bookmarks
 
-### Prerequisites
-
 Most of these recipes use: 
 
 * [curl](https://curl.haxx.se/)
 * [jq](https://stedolan.github.io/jq/) ([tutorial](
 https://programminghistorian.org/en/lessons/json-and-jq))
+
+Jump to:
+
+* [Mastodon](#mastodon)
+* [NetNewsWire starred articles](#netnewswire-starred-articles)
+* [GitHub starred repos](#github-starred-repos)
+* [Lobste.rs](#lobste-rs)
+* Firefox bookmarks — TODO
+* Safari bookmarks — TODO
 
 ### Mastodon 
 
@@ -167,11 +204,3 @@ curl ... | jq '[.[] | {
 	dateAdded: .created_at
 }]' | nbf
 ```
-
-### Firefox bookmarks
-
-TODO
-
-### Safari bookmarks
-
-TODO

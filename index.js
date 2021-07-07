@@ -27,9 +27,27 @@ ${item.description ? `<DD>${sanitize_html(item.description)}` : ''}
 	`;
 };
 
-// Transform the Javascript timestamp (in milliseconds from Jan 1, 1970) to the 
-// Epoch time (in seconds from Jan 1, 1970) used in Netscape format
-const toDate = date => date ? Math.round(new Date(date).getTime() / 1000) : '';
+let currentTimestampInSeconds = Math.round(new Date().getTime() / 1000);
+
+const toDate = date => {
+	if (date) {
+		/*
+			Transform the JavaScript timestamp (in milliseconds from Jan 1, 1970) 
+			to the Epoch time (in seconds from Jan 1, 1970) used in Netscape format.
+		 */
+		return Math.round(new Date(date).getTime() / 1000);
+	} else {
+		/*
+			Tag items with no date with the current date, 
+			while making sure we subtly change the timestamp
+			to avoid pagination issues inherent to hundreds
+			of items sharing the date. 
+
+			See: https://github.com/danburzo/nbf/issues/4
+		 */
+		return currentTimestampInSeconds++;
+	}
+}
 
 const render = obj => {
 	if (Array.isArray(obj)) {
